@@ -90,6 +90,7 @@ public class Sixth {
             }
 
             int loopCount = 0;
+            long startTime = System.nanoTime();
 
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
@@ -106,6 +107,11 @@ public class Sixth {
                     }
                 }
             }
+            long endTime = System.nanoTime();
+            long elapsedTime = endTime - startTime;
+            double elapsedMillis = elapsedTime / 1_000_000.0;
+
+            System.out.println("Runtime: " + elapsedMillis + " ms");
 
             System.out.println(loopCount);
             System.out.println(visited.size());
