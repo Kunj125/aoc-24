@@ -88,12 +88,77 @@ public class Sixth {
                     visited.add(guardX + "," + guardY);
                 }
             }
-            System.out.println(visited);
+
+            int loopCount = 0;
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    if (x == startX && y == startY) {
+                        continue;
+                    }
+                    if (map[y][x] == '.') {
+                        map[y][x] = '#';
+                        if (simulate(map, startX, startY, startDir)) {
+                            loopCount++;
+                        }
+                        // revert the change
+                        map[y][x] = '.';
+                    }
+                }
+            }
+
+            System.out.println(loopCount);
             System.out.println(visited.size());
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    private static boolean simulate(char[][] map, int startX, int startY, Direction startDir) {
+        int width = map[0].length;
+        int height = map.length;
+
+        int guardX = startX;
+        int guardY = startY;
+        Direction dir = startDir;
+
+        Set<String> visitedStates = new HashSet<>();
+        visitedStates.add(state(guardX, guardY, dir));
+
+        while (true) {
+            int frontX = guardX + dir.dx;
+            int frontY = guardY + dir.dy;
+
+            boolean blocked = false;
+            if (frontX < 0 || frontX >= width || frontY < 0 || frontY >= height) {
+                return false;
+            }
+            if (map[frontY][frontX] == '#') {
+                blocked = true;
+            }
+
+            if (blocked) {
+                dir = turnRight(dir);
+            } else {
+                guardX = frontX;
+                guardY = frontY;
+
+                if (guardX < 0 || guardX >= width || guardY < 0 || guardY >= height) {
+                    return false;
+                }
+
+                String currentState = state(guardX, guardY, dir);
+                if (visitedStates.contains(currentState)) {
+                    // ie visited before
+                    return true;
+                }
+                visitedStates.add(currentState);
+            }
+        }
+    }
+
+    private static String state(int x, int y, Direction d) {
+        return x + "," + y + "," + d.name();
     }
 
     private static Direction turnRight(Direction d) {
