@@ -50,7 +50,6 @@ public class Seventh {
         }
 
         long nextNum = nums.get(index);
-        String concat = Long.toString(current) + Long.toString(nextNum);
 
         if (helper(testVal, nums, current + nextNum, index + 1)) {
             return true;
