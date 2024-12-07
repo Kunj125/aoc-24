@@ -44,11 +44,13 @@ public class Seventh {
         return helper(testVal, nums, nums.get(0).longValue(), 1);
     }
 
-    public static boolean helper(Long testVal, List<Integer> nums, long current, int index) {
+    public static boolean helper(long testVal, List<Integer> nums, long current, int index) {
         if (index == nums.size()) {
             return current == testVal;
         }
-
+        if(current > testVal){
+            return false; // if all nums >= 1, can only increase with  +, *, || operations
+        }
         long nextNum = nums.get(index);
 
         if (helper(testVal, nums, current + nextNum, index + 1)) {
@@ -57,6 +59,6 @@ public class Seventh {
         if (helper(testVal, nums, current * nextNum, index + 1)) {
             return true;
         }
-        return helper(testVal, nums, Long.parseLong(Long.toString(current) + Long.toString(nextNum)), index + 1);
+        return helper(testVal, nums, Long.parseLong(Long.toString(current) + Long.toString(nextNum)), index + 1); // concat operator
     }
 }
