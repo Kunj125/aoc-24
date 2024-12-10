@@ -22,8 +22,6 @@ public class Tenth {
                     char c = line.charAt(i);
                     if (Character.isDigit(c)) {
                         row[i] = c - '0';
-                    } else {
-                        row[i] = -1; // for impassable
                     }
                 }
                 mapList.add(row);
@@ -39,13 +37,20 @@ public class Tenth {
 
         List<int[]> trailheads = findTrailheads(map);
         int sumOfScores = 0;
+        int sumOfRatings = 0;
 
         for (int[] trailhead : trailheads) {
             int score = computeTrailheadScore(map, trailhead[0], trailhead[1]);
             sumOfScores += score;
         }
 
+        for (int[] trailhead : trailheads) {
+            int score = computeTrailheadRating(map, trailhead[0], trailhead[1]);
+            sumOfRatings += score;
+        }
+
         System.out.println("scores: " + sumOfScores);
+        System.out.println("ratings: " + sumOfRatings);
     }
     private static List<int[]> findTrailheads(int[][] map) {
         List<int[]> trailheads = new ArrayList<>();
@@ -64,11 +69,56 @@ public class Tenth {
         int rows = map.length;
         int cols = map[0].length;
         boolean[][] visited = new boolean[rows][cols];
-        int reachedNines = 0;
+        Set<String> reachedNines = new HashSet<>();
 
         Queue<int[]> queue = new LinkedList<>();
         queue.offer(new int[]{startRow, startCol});
         visited[startRow][startCol] = true;
+
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            int row = current[0];
+            int col = current[1];
+            int currentHeight = map[row][col];
+
+            if (currentHeight == 9) {
+                reachedNines.add(row + "," + col);
+                continue;
+            }
+
+            // explore all four directions
+            for (int[] dir : DIRECTIONS) {
+                int newRow = row + dir[0];
+                int newCol = col + dir[1];
+
+                // check bounds
+                if (newRow < 0 || newRow >= rows || newCol < 0 || newCol >= cols){
+                    continue;
+                }
+
+                if (visited[newRow][newCol]){
+                    continue;
+                }
+
+                int nextHeight = map[newRow][newCol];
+
+                if (nextHeight == currentHeight + 1) {
+                    visited[newRow][newCol] = true;
+                    queue.offer(new int[]{newRow, newCol});
+                }
+            }
+        }
+
+        return reachedNines.size();
+    }
+
+    private static int computeTrailheadRating(int[][] map, int startRow, int startCol) {
+        int rows = map.length;
+        int cols = map[0].length;
+        int reachedNines = 0;
+
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{startRow, startCol});
 
         while (!queue.isEmpty()) {
             int[] current = queue.poll();
@@ -91,14 +141,9 @@ public class Tenth {
                     continue;
                 }
 
-                if (visited[newRow][newCol]){
-                    continue;
-                }
-
                 int nextHeight = map[newRow][newCol];
 
                 if (nextHeight == currentHeight + 1) {
-                    visited[newRow][newCol] = true;
                     queue.offer(new int[]{newRow, newCol});
                 }
             }
